@@ -44,7 +44,8 @@ namespace ApkInfoViewer
             }
             folderBrowser.ShowDialog();
 
-            getFolderAPKList(folderBrowser.SelectedPath);
+            textBox2.Text = folderBrowser.SelectedPath;
+            refreshAPKList();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -101,7 +102,7 @@ namespace ApkInfoViewer
 
         private void button5_Click(object sender, EventArgs e)
         {
-            getFolderAPKList(textBox2.Text);
+            refreshAPKList();
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -161,6 +162,7 @@ namespace ApkInfoViewer
             Console.WriteLine("apkListBoxMenuItem2.Name : " + apkListBoxMenuItem2.Name);
             Console.WriteLine("apkListBoxMenuItem3.Name : " + apkListBoxMenuItem3.Name);
             Console.WriteLine("apkListBoxMenuItem4.Name : " + apkListBoxMenuItem4.Name);
+            Console.WriteLine("apkListBoxMenuItem5.Name : " + apkListBoxMenuItem5.Name);
 
             if (selectedItem.Name.Equals(apkListBoxMenuItem1.Name))
             {
@@ -177,6 +179,10 @@ namespace ApkInfoViewer
             else if (selectedItem.Name.Equals(apkListBoxMenuItem4.Name))
             {
                 onRefreshAPKListClicked();
+            }
+            else if (selectedItem.Name.Equals(apkListBoxMenuItem5.Name))
+            {
+                onRenameAPKClicked();
             }
         }
 
@@ -276,9 +282,34 @@ namespace ApkInfoViewer
             }
         }
 
+        private void onRenameAPKClicked()
+        {
+            int selectedApkCount = listBox1.SelectedItems.Count;
+
+            if (selectedApkCount != 0)
+            {
+                FileInfo selectedItem = listBox1.SelectedItem as FileInfo;
+                String packageName = textBox3.Text;
+                String versionCode = textBox4.Text;
+                Console.WriteLine("selectedItem.FullName : " + selectedItem.FullName);
+                Console.WriteLine("selectedItem.Name : " + selectedItem.Name);
+                Console.WriteLine("selectedItem.DirectoryName : " + selectedItem.DirectoryName);
+
+                try
+                {
+                    File.Move(selectedItem.FullName, String.Format("{0}\\{1}.{2}.apk", selectedItem.DirectoryName, packageName, versionCode));
+                    refreshAPKList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+
         private void onRefreshAPKListClicked()
         {
-            getFolderAPKList(textBox2.Text);
+            refreshAPKList();
         }
 
         private void onRefreshDeviceListClicked()
@@ -286,8 +317,9 @@ namespace ApkInfoViewer
             refreshDeviceList();
         }
 
-        private void getFolderAPKList(String folderPath)
+        private void refreshAPKList()
         {
+            String folderPath = textBox2.Text;
             listBox1.Items.Clear();
 
             if (!String.IsNullOrEmpty(folderPath))
