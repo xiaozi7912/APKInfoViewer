@@ -21,6 +21,9 @@ namespace ApkInfoViewer
         {
             listBox1.DisplayMember = "Name";
             listBox1.ValueMember = "FullName";
+
+            listBox1.ContextMenuStrip = apkListBoxMenu;
+            listBox2.ContextMenuStrip = deviceListBoxMenu;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -35,28 +38,28 @@ namespace ApkInfoViewer
             {
                 folderBrowser.SelectedPath = textBox2.Text;
             }
+            else
+            {
+                folderBrowser.SelectedPath = Directory.GetCurrentDirectory();
+            }
             folderBrowser.ShowDialog();
 
-            if (!String.IsNullOrEmpty(folderBrowser.SelectedPath))
-            {
-                listBox1.Items.Clear();
-                textBox2.Text = folderBrowser.SelectedPath;
-
-                DirectoryInfo directoryInfo = new DirectoryInfo(folderBrowser.SelectedPath);
-                foreach (FileInfo fileInfo in directoryInfo.GetFiles())
-                {
-                    Console.WriteLine("Extension : " + fileInfo.Extension);
-                    if (fileInfo.Extension.ToLower().Equals(".apk"))
-                    {
-                        listBox1.Items.Add(fileInfo);
-                    }
-                }
-            }
+            getFolderAPKList(folderBrowser.SelectedPath);
         }
+
         private void button3_Click(object sender, EventArgs e)
         {
             int selectedApkCount = listBox1.SelectedItems.Count;
             int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedApkCount == 0)
+            {
+                MessageBox.Show("Select an apk.");
+            }
+            else if (selectedDeviceCount == 0)
+            {
+                MessageBox.Show("Select a device.");
+            }
 
             if (selectedApkCount != 0 && selectedDeviceCount != 0)
             {
@@ -75,17 +78,232 @@ namespace ApkInfoViewer
             }
         }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            int selectedApkCount = listBox1.SelectedItems.Count;
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedApkCount != 0 && selectedDeviceCount != 0)
+            {
+                String packageName = textBox3.Text;
+                String activityName = textBox1.Text;
+
+                foreach (object selectedItem in listBox2.SelectedItems)
+                {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() =>
+                    {
+                        startApp(selectedItem.ToString(), packageName, activityName);
+                    }).Start();
+                }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            getFolderAPKList(textBox2.Text);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            int selectedApkCount = listBox1.SelectedItems.Count;
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedApkCount == 0)
+            {
+                MessageBox.Show("Select an apk.");
+            }
+            else if (selectedDeviceCount == 0)
+            {
+                MessageBox.Show("Select a device.");
+            }
+
+            if (selectedApkCount != 0 && selectedDeviceCount != 0)
+            {
+                String selectedFilePath = (listBox1.SelectedItem as FileInfo).FullName;
+                progressBar1.Maximum = selectedDeviceCount;
+                progressBar1.Value = 0;
+                Console.WriteLine("selectedFilePath : " + selectedFilePath);
+                foreach (object selectedItem in listBox2.SelectedItems)
+                {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() =>
+                    {
+                        uninstallAPK(selectedItem.ToString(), textBox3.Text);
+                    }).Start();
+                }
+            }
+        }
+
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            listBox1.SelectedIndex = listBox1.IndexFromPoint(e.X, e.Y);
+        }
+
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             FileInfo selectedItem = listBox1.SelectedItem as FileInfo;
-            String filePath = selectedItem.FullName;
-            Console.WriteLine("filePath : " + filePath);
-            showSelectedInfo(filePath);
+
+            if (selectedItem != null)
+            {
+                String filePath = selectedItem.FullName;
+                Console.WriteLine("filePath : " + filePath);
+                showSelectedInfo(filePath);
+            }
         }
 
-        private void listBox1_DoubleClick(object sender, EventArgs e)
+        private void apkListBoxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
+            ToolStripItem selectedItem = e.ClickedItem;
+            Console.WriteLine("selectedItem.Name : " + selectedItem.Name);
+            Console.WriteLine("selectedItem.Text : " + selectedItem.Text);
+            Console.WriteLine("apkListBoxMenuItem1.Name : " + apkListBoxMenuItem1.Name);
+            Console.WriteLine("apkListBoxMenuItem2.Name : " + apkListBoxMenuItem2.Name);
+            Console.WriteLine("apkListBoxMenuItem3.Name : " + apkListBoxMenuItem3.Name);
+            Console.WriteLine("apkListBoxMenuItem4.Name : " + apkListBoxMenuItem4.Name);
 
+            if (selectedItem.Name.Equals(apkListBoxMenuItem1.Name))
+            {
+                onInstallAPKClicked();
+            }
+            else if (selectedItem.Name.Equals(apkListBoxMenuItem2.Name))
+            {
+                onUninstallAPKClicked();
+            }
+            else if (selectedItem.Name.Equals(apkListBoxMenuItem3.Name))
+            {
+                onStartAPPClicked();
+            }
+            else if (selectedItem.Name.Equals(apkListBoxMenuItem4.Name))
+            {
+                onRefreshAPKListClicked();
+            }
+        }
+
+        private void deviceListBoxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            ToolStripItem selectedItem = e.ClickedItem;
+            Console.WriteLine("selectedItem.Name : " + selectedItem.Name);
+            Console.WriteLine("selectedItem.Text : " + selectedItem.Text);
+            Console.WriteLine("deviceListBoxMenuItem1.Name : " + deviceListBoxMenuItem1.Name);
+
+            if (selectedItem.Name.Equals(deviceListBoxMenuItem1.Name))
+            {
+                onRefreshDeviceListClicked();
+            }
+        }
+
+        private void onInstallAPKClicked()
+        {
+            int selectedApkCount = listBox1.SelectedItems.Count;
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedApkCount == 0)
+            {
+                MessageBox.Show("Select an apk.");
+            }
+            else if (selectedDeviceCount == 0)
+            {
+                MessageBox.Show("Select a device.");
+            }
+
+            if (selectedApkCount != 0 && selectedDeviceCount != 0)
+            {
+                String selectedFilePath = (listBox1.SelectedItem as FileInfo).FullName;
+                progressBar1.Maximum = selectedDeviceCount;
+                progressBar1.Value = 0;
+                Console.WriteLine("selectedFilePath : " + selectedFilePath);
+                foreach (object selectedItem in listBox2.SelectedItems)
+                {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() =>
+                    {
+                        installAPK(selectedItem.ToString(), selectedFilePath);
+                    }).Start();
+                }
+            }
+        }
+
+        private void onUninstallAPKClicked()
+        {
+            int selectedApkCount = listBox1.SelectedItems.Count;
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedApkCount == 0)
+            {
+                MessageBox.Show("Select an apk.");
+            }
+            else if (selectedDeviceCount == 0)
+            {
+                MessageBox.Show("Select a device.");
+            }
+
+            if (selectedApkCount != 0 && selectedDeviceCount != 0)
+            {
+                String selectedFilePath = (listBox1.SelectedItem as FileInfo).FullName;
+                progressBar1.Maximum = selectedDeviceCount;
+                progressBar1.Value = 0;
+                Console.WriteLine("selectedFilePath : " + selectedFilePath);
+                foreach (object selectedItem in listBox2.SelectedItems)
+                {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() =>
+                    {
+                        uninstallAPK(selectedItem.ToString(), textBox3.Text);
+                    }).Start();
+                }
+            }
+        }
+
+        private void onStartAPPClicked()
+        {
+            int selectedApkCount = listBox1.SelectedItems.Count;
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedApkCount != 0 && selectedDeviceCount != 0)
+            {
+                String packageName = textBox3.Text;
+                String activityName = textBox1.Text;
+
+                foreach (object selectedItem in listBox2.SelectedItems)
+                {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() =>
+                    {
+                        startApp(selectedItem.ToString(), packageName, activityName);
+                    }).Start();
+                }
+            }
+        }
+
+        private void onRefreshAPKListClicked()
+        {
+            getFolderAPKList(textBox2.Text);
+        }
+
+        private void onRefreshDeviceListClicked()
+        {
+            refreshDeviceList();
+        }
+
+        private void getFolderAPKList(String folderPath)
+        {
+            listBox1.Items.Clear();
+
+            if (!String.IsNullOrEmpty(folderPath))
+            {
+                textBox2.Text = folderPath;
+
+                DirectoryInfo directoryInfo = new DirectoryInfo(folderPath);
+                foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+                {
+                    Console.WriteLine("Extension : " + fileInfo.Extension);
+                    if (fileInfo.Extension.ToLower().Equals(".apk"))
+                    {
+                        listBox1.Items.Add(fileInfo);
+                    }
+                }
+            }
         }
 
         private void showSelectedInfo(String filePath)
@@ -98,24 +316,33 @@ namespace ApkInfoViewer
             startInfo.FileName = AAPT_PATH;
             startInfo.Arguments = String.Format("d badging {0}", filePath);
 
+            textBox3.Text = String.Empty;
+            textBox4.Text = String.Empty;
+            textBox5.Text = String.Empty;
+            textBox1.Text = String.Empty;
+
             try
             {
                 using (Process exeProcess = Process.Start(startInfo))
                 {
-                    Regex regex = new Regex(@".+ name='([\w\.-]+)' versionCode='([\w\.-]+)' versionName='([\w\.-]+)'", RegexOptions.IgnoreCase);
-                    String readLine = exeProcess.StandardOutput.ReadLine();
-                    Console.WriteLine(readLine);
-                    //MatchCollection matches = regex.Matches(readLine);
-                    Console.WriteLine(regex.Match(readLine).Groups.Count);
-                    Console.WriteLine(regex.Match(readLine).Groups[0]);
-                    Console.WriteLine(regex.Match(readLine).Groups[1]);
-                    Console.WriteLine(regex.Match(readLine).Groups[2]);
-                    Console.WriteLine(regex.Match(readLine).Groups[3]);
-                    textBox3.Text = regex.Match(readLine).Groups[1].Value;
-                    textBox4.Text = regex.Match(readLine).Groups[2].Value;
-                    textBox5.Text = regex.Match(readLine).Groups[3].Value;
-                    Console.WriteLine(regex.Matches(readLine).Count);
-                    Console.WriteLine(regex.IsMatch(readLine));
+                    while (!exeProcess.StandardOutput.EndOfStream)
+                    {
+                        String readLine = exeProcess.StandardOutput.ReadLine();
+                        Console.WriteLine(readLine);
+
+                        if (readLine.StartsWith("package"))
+                        {
+                            Regex regex = new Regex(@".+ name='([\w\.-]+)' versionCode='([\w\.-]+)' versionName='([\w\.-]+)'", RegexOptions.IgnoreCase);
+                            textBox3.Text = regex.Match(readLine).Groups[1].Value;
+                            textBox4.Text = regex.Match(readLine).Groups[2].Value;
+                            textBox5.Text = regex.Match(readLine).Groups[3].Value;
+                        }
+                        else if (readLine.StartsWith("launchable"))
+                        {
+                            Regex regex = new Regex(@"name='([\w\.-]+)'");
+                            textBox1.Text = regex.Match(readLine).Groups[1].Value;
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -184,6 +411,80 @@ namespace ApkInfoViewer
                             {
                                 progressBar1.Value++;
                             }));
+                        }
+                        else if (readLine.StartsWith("Failure"))
+                        {
+                            MessageBox.Show(readLine);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private void uninstallAPK(String device, String packageName)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = true;
+            startInfo.UseShellExecute = false;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.FileName = ADB_PATH;
+            startInfo.Arguments = String.Format("-s {0} uninstall {1}", device, packageName);
+
+            try
+            {
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    while (!exeProcess.StandardOutput.EndOfStream)
+                    {
+                        String readLine = exeProcess.StandardOutput.ReadLine();
+                        Console.WriteLine(readLine);
+                        if (readLine.ToLower().Equals("success"))
+                        {
+                            progressBar1.Invoke(new Action(() =>
+                            {
+                                progressBar1.Value++;
+                            }));
+                        }
+                        else if (readLine.StartsWith("Failure"))
+                        {
+                            MessageBox.Show(readLine);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private void startApp(String device, String packageName, String activityName)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = true;
+            startInfo.UseShellExecute = false;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.FileName = ADB_PATH;
+            startInfo.Arguments = String.Format("-s {0} shell am start -n {1}/{2}", device, packageName, activityName);
+
+            try
+            {
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    while (!exeProcess.StandardOutput.EndOfStream)
+                    {
+                        String readLine = exeProcess.StandardOutput.ReadLine();
+                        Console.WriteLine(readLine);
+
+                        if (readLine.StartsWith("Error:"))
+                        {
+                            MessageBox.Show(readLine);
                         }
                     }
                 }
