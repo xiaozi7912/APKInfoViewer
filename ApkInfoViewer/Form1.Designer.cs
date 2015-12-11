@@ -47,11 +47,13 @@
             this.apkListBoxMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.apkListBoxMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.apkListBoxMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.apkListBoxMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceListBoxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deviceListBoxMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.apkListBoxMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.deviceListBoxMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.apkListBoxMenu.SuspendLayout();
             this.deviceListBoxMenu.SuspendLayout();
             this.SuspendLayout();
@@ -153,6 +155,7 @@
             this.listBox2.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.listBox2.Size = new System.Drawing.Size(414, 116);
             this.listBox2.TabIndex = 13;
+            this.listBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
             // 
             // progressBar1
             // 
@@ -192,45 +195,58 @@
             this.apkListBoxMenuItem4});
             this.apkListBoxMenu.Name = "apkListBoxMenu";
             this.apkListBoxMenu.ShowImageMargin = false;
-            this.apkListBoxMenu.Size = new System.Drawing.Size(128, 148);
+            this.apkListBoxMenu.Size = new System.Drawing.Size(122, 126);
             this.apkListBoxMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.apkListBoxMenu_ItemClicked);
             // 
             // apkListBoxMenuItem1
             // 
             this.apkListBoxMenuItem1.Name = "apkListBoxMenuItem1";
-            this.apkListBoxMenuItem1.Size = new System.Drawing.Size(127, 22);
+            this.apkListBoxMenuItem1.Size = new System.Drawing.Size(121, 22);
             this.apkListBoxMenuItem1.Text = "Install APK";
             // 
             // apkListBoxMenuItem2
             // 
             this.apkListBoxMenuItem2.Name = "apkListBoxMenuItem2";
-            this.apkListBoxMenuItem2.Size = new System.Drawing.Size(127, 22);
+            this.apkListBoxMenuItem2.Size = new System.Drawing.Size(121, 22);
             this.apkListBoxMenuItem2.Text = "Uinstall APK";
             // 
             // apkListBoxMenuItem3
             // 
             this.apkListBoxMenuItem3.Name = "apkListBoxMenuItem3";
-            this.apkListBoxMenuItem3.Size = new System.Drawing.Size(127, 22);
+            this.apkListBoxMenuItem3.Size = new System.Drawing.Size(121, 22);
             this.apkListBoxMenuItem3.Text = "Start APP";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(124, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(118, 6);
+            // 
+            // apkListBoxMenuItem5
+            // 
+            this.apkListBoxMenuItem5.Name = "apkListBoxMenuItem5";
+            this.apkListBoxMenuItem5.Size = new System.Drawing.Size(121, 22);
+            this.apkListBoxMenuItem5.Text = "Rename";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(118, 6);
             // 
             // apkListBoxMenuItem4
             // 
             this.apkListBoxMenuItem4.Name = "apkListBoxMenuItem4";
-            this.apkListBoxMenuItem4.Size = new System.Drawing.Size(127, 22);
+            this.apkListBoxMenuItem4.Size = new System.Drawing.Size(121, 22);
             this.apkListBoxMenuItem4.Text = "Refresh APKs";
             // 
             // deviceListBoxMenu
             // 
             this.deviceListBoxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deviceListBoxMenuItem2,
+            this.toolStripSeparator3,
             this.deviceListBoxMenuItem1});
             this.deviceListBoxMenu.Name = "deviceListBoxMenu";
             this.deviceListBoxMenu.ShowImageMargin = false;
-            this.deviceListBoxMenu.Size = new System.Drawing.Size(138, 26);
+            this.deviceListBoxMenu.Size = new System.Drawing.Size(138, 54);
             this.deviceListBoxMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.deviceListBoxMenu_ItemClicked);
             // 
             // deviceListBoxMenuItem1
@@ -239,16 +255,16 @@
             this.deviceListBoxMenuItem1.Size = new System.Drawing.Size(137, 22);
             this.deviceListBoxMenuItem1.Text = "Refresh Devices";
             // 
-            // apkListBoxMenuItem5
+            // deviceListBoxMenuItem2
             // 
-            this.apkListBoxMenuItem5.Name = "apkListBoxMenuItem5";
-            this.apkListBoxMenuItem5.Size = new System.Drawing.Size(127, 22);
-            this.apkListBoxMenuItem5.Text = "Rename";
+            this.deviceListBoxMenuItem2.Name = "deviceListBoxMenuItem2";
+            this.deviceListBoxMenuItem2.Size = new System.Drawing.Size(137, 22);
+            this.deviceListBoxMenuItem2.Text = "Reboot";
             // 
-            // toolStripSeparator2
+            // toolStripSeparator3
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(124, 6);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(134, 6);
             // 
             // Form1
             // 
@@ -304,6 +320,8 @@
         private System.Windows.Forms.ToolStripMenuItem deviceListBoxMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem apkListBoxMenuItem5;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem deviceListBoxMenuItem2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

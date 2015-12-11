@@ -153,6 +153,11 @@ namespace ApkInfoViewer
             }
         }
 
+        private void listBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            listBox2.SelectedIndex = listBox2.IndexFromPoint(e.X, e.Y);
+        }
+
         private void apkListBoxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ToolStripItem selectedItem = e.ClickedItem;
@@ -196,6 +201,10 @@ namespace ApkInfoViewer
             if (selectedItem.Name.Equals(deviceListBoxMenuItem1.Name))
             {
                 onRefreshDeviceListClicked();
+            }
+            else if (selectedItem.Name.Equals(deviceListBoxMenuItem2.Name))
+            {
+                onRebootDeviceClicked();
             }
         }
 
@@ -317,6 +326,23 @@ namespace ApkInfoViewer
             refreshDeviceList();
         }
 
+        private void onRebootDeviceClicked()
+        {
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+
+            if (selectedDeviceCount != 0)
+            {
+                foreach (object selectedItem in listBox2.SelectedItems)
+                {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() =>
+                    {
+                        rebootDevice(selectedItem.ToString());
+                    }).Start();
+                }
+            }
+        }
+
         private void refreshAPKList()
         {
             String folderPath = textBox2.Text;
@@ -410,6 +436,35 @@ namespace ApkInfoViewer
                             Console.WriteLine(match.Groups[0]);
                             Console.WriteLine(match.Groups[1]);
                         }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private void rebootDevice(String device)
+        {
+            Console.WriteLine("rebootDevice");
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = true;
+            startInfo.UseShellExecute = false;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.FileName = ADB_PATH;
+            startInfo.Arguments = String.Format("-s {0} reboot", device);
+            Console.WriteLine(String.Format("-s {0} reboot", device));
+
+            try
+            {
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    while (!exeProcess.StandardOutput.EndOfStream)
+                    {
+                        String readLine = exeProcess.StandardOutput.ReadLine();
+                        Console.WriteLine(readLine);
                     }
                 }
             }
