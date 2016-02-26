@@ -390,7 +390,7 @@ namespace ApkInfoViewer
 
                         if (readLine.StartsWith("package"))
                         {
-                            Regex regex = new Regex(@".+ name='([\w\.-]+)' versionCode='([\w\.-]+)' versionName='([\w\.-]+)'", RegexOptions.IgnoreCase);
+                            Regex regex = new Regex(@".+ name='([\w\s\.-]+)' versionCode='([\w\s\.-]+)' versionName='([\w\s\.-]+)'", RegexOptions.IgnoreCase);
                             textBox3.Text = regex.Match(readLine).Groups[1].Value;
                             textBox4.Text = regex.Match(readLine).Groups[2].Value;
                             textBox5.Text = regex.Match(readLine).Groups[3].Value;
