@@ -82,13 +82,14 @@
             this.listBoxKeyList.Name = "listBoxKeyList";
             this.listBoxKeyList.Size = new System.Drawing.Size(460, 229);
             this.listBoxKeyList.TabIndex = 4;
+            this.listBoxKeyList.SelectedIndexChanged += new System.EventHandler(this.listBoxKeyList_SelectedIndexChanged);
             // 
             // textBoxSelectPK8
             // 
-            this.textBoxSelectPK8.Enabled = false;
             this.textBoxSelectPK8.Font = new System.Drawing.Font("Consolas", 10F);
             this.textBoxSelectPK8.Location = new System.Drawing.Point(12, 47);
             this.textBoxSelectPK8.Name = "textBoxSelectPK8";
+            this.textBoxSelectPK8.ReadOnly = true;
             this.textBoxSelectPK8.Size = new System.Drawing.Size(379, 23);
             this.textBoxSelectPK8.TabIndex = 5;
             // 

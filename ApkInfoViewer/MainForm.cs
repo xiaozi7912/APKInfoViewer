@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,6 +17,7 @@ namespace ApkInfoViewer {
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            Console.WriteLine("Form1_Load");
             listBox1.DisplayMember = "Name";
             listBox1.ValueMember = "FullName";
 
@@ -23,6 +25,44 @@ namespace ApkInfoViewer {
             listBox2.ContextMenuStrip = deviceListBoxMenu;
 
             comboBoxSignSystem.DisplayMember = "description";
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e) {
+            Console.WriteLine("MainForm_Activated");
+            _ConfigManager = new ConfigManager();
+
+            ADB_PATH = _ConfigManager.path_ADB;
+            AAPT_PATH = _ConfigManager.path_AAPT;
+            textBox2.Text = _ConfigManager.path_last_selected_folder;
+
+            if (_ConfigManager.keyList != null) {
+                int selectedIndex = comboBoxSignSystem.SelectedIndex;
+                Console.WriteLine("selectedIndex : " + selectedIndex);
+                comboBoxSignSystem.Items.Clear();
+
+                foreach (PlatformKey platformKey in _ConfigManager.keyList) {
+                    comboBoxSignSystem.Items.Add(platformKey);
+                }
+
+                if ((selectedIndex != -1) && _ConfigManager.keyList.Count > selectedIndex) {
+                    comboBoxSignSystem.SelectedIndex = selectedIndex;
+                } else {
+                    comboBoxSignSystem.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private void MainForm_Deactivate(object sender, EventArgs e) {
+            Console.WriteLine("MainForm_Deactivate");
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            Console.WriteLine("MainForm_FormClosing");
+            String folder_path = textBox2.Text;
+
+            if (!String.IsNullOrEmpty(folder_path)) {
+                _ConfigManager.setLastSelectedPath(folder_path);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e) {
@@ -36,10 +76,11 @@ namespace ApkInfoViewer {
             } else {
                 folderBrowser.SelectedPath = Directory.GetCurrentDirectory();
             }
-            folderBrowser.ShowDialog();
 
-            textBox2.Text = folderBrowser.SelectedPath;
-            refreshAPKList();
+            if (folderBrowser.ShowDialog() == DialogResult.OK) {
+                textBox2.Text = folderBrowser.SelectedPath;
+                refreshAPKList();
+            }
         }
 
         private void button3_Click(object sender, EventArgs e) {
@@ -117,16 +158,29 @@ namespace ApkInfoViewer {
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e) {
             FileInfo selectedItem = listBox1.SelectedItem as FileInfo;
+            UTF8Encoding encoding = new UTF8Encoding();
+            String str = encoding.GetString(Encoding.Convert(Encoding.GetEncoding(936), Encoding.UTF8, Encoding.GetEncoding(936).GetBytes(listBox1.SelectedItem.ToString())));
+            Console.WriteLine("listBox1.SelectedItem : " + listBox1.SelectedItem);
+            Console.WriteLine("str : " + str);
 
             if (selectedItem != null) {
                 String filePath = selectedItem.FullName;
                 Console.WriteLine("filePath : " + filePath);
+                Console.WriteLine("selectedItem.Name : " + selectedItem.Name);
                 showSelectedInfo(filePath);
+                updateSystemKeyString(filePath);
             }
         }
 
         private void listBox2_MouseDown(object sender, MouseEventArgs e) {
             listBox2.SelectedIndex = listBox2.IndexFromPoint(e.X, e.Y);
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e) {
+            Console.WriteLine(listBox2.SelectedItem);
+            if (listBox2.SelectedItem != null) {
+                updateAdbShellTextBox(listBox2.SelectedItem.ToString());
+            }
         }
 
         private void apkListBoxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
@@ -149,9 +203,10 @@ namespace ApkInfoViewer {
                 onRefreshAPKListClicked();
             } else if (selectedItem.Name.Equals(apkListBoxMenuItem5.Name)) {
                 onRenameAPKClicked();
+            } else if (selectedItem.Name.Equals(menuItemClearData.Name)) {
+                onClearDataClicked();
             }
         }
-
         private void deviceListBoxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             ToolStripItem selectedItem = e.ClickedItem;
             Console.WriteLine("selectedItem.Name : " + selectedItem.Name);
@@ -246,8 +301,8 @@ namespace ApkInfoViewer {
                     File.Move(selectedItem.FullName, String.Format("{0}\\{1}.{2}_{3}.apk",
                         selectedItem.DirectoryName,
                         packageName,
-                        versionCode,
-                        versionName));
+                        versionName,
+                        versionCode));
                     refreshAPKList();
                 } catch (Exception e) {
                     Console.WriteLine(e.Message);
@@ -276,6 +331,41 @@ namespace ApkInfoViewer {
             }
         }
 
+        private void onClearDataClicked() {
+            Console.WriteLine("onClearDataClicked");
+            int selectedDeviceCount = listBox2.SelectedItems.Count;
+            String packageName = textBox3.Text;
+
+            if (selectedDeviceCount != 0 && !String.IsNullOrEmpty(packageName)) {
+                foreach (object selectedItem in listBox2.SelectedItems) {
+                    Console.WriteLine("selectedItem : " + selectedItem);
+                    new Thread(() => {
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.CreateNoWindow = true;
+                        startInfo.UseShellExecute = false;
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        startInfo.RedirectStandardOutput = true;
+                        startInfo.FileName = ADB_PATH;
+                        startInfo.Arguments = String.Format("-s {0} shell pm clear {1}",
+                            selectedItem.ToString(),
+                            packageName);
+                        Console.WriteLine("startInfo.Arguments : " + startInfo.Arguments);
+
+                        try {
+                            using (Process exeProcess = Process.Start(startInfo)) {
+                                while (!exeProcess.StandardOutput.EndOfStream) {
+                                    String readLine = exeProcess.StandardOutput.ReadLine();
+                                    Console.WriteLine(readLine);
+                                }
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }).Start();
+                }
+            }
+        }
+
         private void refreshAPKList() {
             String folderPath = textBox2.Text;
             listBox1.Items.Clear();
@@ -289,7 +379,8 @@ namespace ApkInfoViewer {
                     if (fileInfo.Extension.ToLower().Equals(".apk")) {
                         String filteString = textBoxPackageFilte.Text;
                         if (!String.IsNullOrEmpty(filteString)) {
-                            if (fileInfo.Name.Contains(filteString)) {
+                            Regex regex = new Regex(filteString, RegexOptions.IgnoreCase);
+                            if (regex.IsMatch(fileInfo.Name)) {
                                 listBox1.Items.Add(fileInfo);
                             }
                         } else {
@@ -307,7 +398,7 @@ namespace ApkInfoViewer {
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.RedirectStandardOutput = true;
             startInfo.FileName = AAPT_PATH;
-            startInfo.Arguments = String.Format("d badging {0}", filePath);
+            startInfo.Arguments = String.Format("d badging '{0}'", filePath);
 
             textBox3.Text = String.Empty;
             textBox4.Text = String.Empty;
@@ -348,7 +439,7 @@ namespace ApkInfoViewer {
 
             try {
                 using (Process exeProcess = Process.Start(startInfo)) {
-                    Regex regex = new Regex(@"([\w\.-:]+)\tdevice", RegexOptions.IgnoreCase);
+                    Regex regex = new Regex(@"([\w\.\-:]+)\t(device)", RegexOptions.IgnoreCase);
                     while (!exeProcess.StandardOutput.EndOfStream) {
                         String readLine = exeProcess.StandardOutput.ReadLine();
                         Console.WriteLine(readLine);
@@ -480,32 +571,6 @@ namespace ApkInfoViewer {
         private void preferencesItemTool_Click(object sender, EventArgs e) {
             new ToolForm().Show();
         }
-
-        private void MainForm_Activated(object sender, EventArgs e) {
-            Console.WriteLine("MainForm_Activated");
-            _ConfigManager = new ConfigManager();
-
-            ADB_PATH = _ConfigManager.path_ADB;
-            AAPT_PATH = _ConfigManager.path_AAPT;
-
-            if (_ConfigManager.keyList != null) {
-                comboBoxSignSystem.Items.Clear();
-
-                foreach (PlatformKey platformKey in _ConfigManager.keyList) {
-                    comboBoxSignSystem.Items.Add(platformKey);
-                }
-                comboBoxSignSystem.SelectedIndex = 0;
-            }
-        }
-
-        private void MainForm_Deactivate(object sender, EventArgs e) {
-            Console.WriteLine("MainForm_Deactivate");
-        }
-
-        private void listBox2_SelectedIndexChanged(object sender, EventArgs e) {
-
-        }
-
         private void groupBoxDevice_Enter(object sender, EventArgs e) {
 
         }
@@ -576,6 +641,142 @@ namespace ApkInfoViewer {
                 } catch (Exception exception) {
                     Console.WriteLine(exception.Message);
                 }
+            }
+        }
+
+        private void textBoxPlatformKey_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void textBoxPlatformKey_Click(object sender, EventArgs e) {
+            (sender as TextBox).SelectAll();
+            try {
+                System.Windows.Forms.Clipboard.SetText(textBoxPlatformKey.Text);
+            } catch (ArgumentNullException exp) {
+                Console.WriteLine(exp.Message);
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e) {
+        }
+
+        private void textBox3_Click(object sender, EventArgs e) {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void textBox4_Click(object sender, EventArgs e) {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void textBox5_Click(object sender, EventArgs e) {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void textBox1_Click(object sender, EventArgs e) {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void comboBoxSignSystem_SelectedIndexChanged(object sender, EventArgs e) {
+            FileInfo selectedItem = listBox1.SelectedItem as FileInfo;
+
+            if (selectedItem != null) {
+                String filePath = selectedItem.FullName;
+                Console.WriteLine("filePath : " + filePath);
+                updateSystemKeyString(filePath);
+            }
+        }
+
+        private void updateSystemKeyString(String filePath) {
+            textBoxPlatformKey.Text = String.Empty;
+
+            PlatformKey selectedKey = comboBoxSignSystem.SelectedItem as PlatformKey;
+            String systemName = filePath.Insert(filePath.LastIndexOf("apk"), "system.");
+            textBoxPlatformKey.Text = String.Format("java -jar '{0}' '{1}' '{2}' '{3}' '{4}'",
+                _ConfigManager.path_SIGNAPK,
+                selectedKey.path_pem,
+                selectedKey.path_pk8,
+                filePath,
+                systemName);
+        }
+
+        private void updateAdbShellTextBox(String deviceName) {
+            Console.WriteLine("updateAdbShellTextBox");
+            String commandString = String.Format("adb -s {0} ", deviceName);
+            textBoxAdbShell.Text = commandString;
+        }
+
+        private void textBoxAdbShell_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void textBoxAdbShell_Click(object sender, EventArgs e) {
+            TextBox view = (sender as TextBox);
+            view.SelectAll();
+            try {
+                System.Windows.Forms.Clipboard.SetText(view.Text);
+            } catch (ArgumentNullException exp) {
+                Console.WriteLine(exp.Message);
+            }
+        }
+
+        private void buttonSendText_Click(object sender, EventArgs e) {
+            if (hasDeviceSelected()) {
+                String inputText = textBoxSendText.Text;
+                if (inputText.Length > 0) {
+                    foreach (object selectedItem in listBox2.SelectedItems) {
+                        Console.WriteLine("selectedItem : " + selectedItem);
+                        new Thread(() => {
+                            sendText(selectedItem.ToString(), inputText);
+                            textBoxSendText.Invoke(new Action(() => {
+                                textBoxSendText.Text = String.Empty;
+                            }));
+                        }).Start();
+                    }
+                }
+            }
+        }
+
+        private void sendText(String device, String text) {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = true;
+            startInfo.UseShellExecute = false;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.FileName = ADB_PATH;
+            startInfo.Arguments = String.Format("-s {0} shell input text '{1}'", device, text);
+            Console.WriteLine("startInfo.Arguments : " + startInfo.Arguments);
+
+            try {
+                using (Process exeProcess = Process.Start(startInfo)) {
+                    while (!exeProcess.StandardOutput.EndOfStream) {
+                        String readLine = exeProcess.StandardOutput.ReadLine();
+                        Console.WriteLine(readLine);
+
+                        if (readLine.StartsWith("Error:")) {
+                            MessageBox.Show(readLine);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
+        private bool hasDeviceSelected() {
+            int selectCount = listBox2.SelectedItems.Count;
+            if (selectCount > 0) {
+                return true;
+            }
+            return false;
+        }
+
+        private void textBoxSendText_KeyUp(object sender, KeyEventArgs e) {
+
+        }
+
+        private void textBoxSendText_KeyPress(object sender, KeyPressEventArgs e) {
+            if (e.KeyChar == (char)Keys.Enter) {
+                buttonSendText.PerformClick();
             }
         }
     }

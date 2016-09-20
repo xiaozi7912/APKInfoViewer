@@ -38,9 +38,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.apkListBoxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.apkListBoxMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.apkListBoxMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.apkListBoxMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.apkListBoxMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemClearData = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.apkListBoxMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -55,12 +56,16 @@
             this.preferencesItemPlatformKey = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.groupBoxDevice = new System.Windows.Forms.GroupBox();
+            this.textBoxAdbShell = new System.Windows.Forms.TextBox();
             this.buttonRefreshDevice = new System.Windows.Forms.Button();
             this.groupBoxAPK = new System.Windows.Forms.GroupBox();
+            this.textBoxPlatformKey = new System.Windows.Forms.TextBox();
+            this.buttonSignSystem = new System.Windows.Forms.Button();
+            this.comboBoxSignSystem = new System.Windows.Forms.ComboBox();
             this.textBoxPackageFilte = new System.Windows.Forms.TextBox();
             this.buttonPackageFilte = new System.Windows.Forms.Button();
-            this.comboBoxSignSystem = new System.Windows.Forms.ComboBox();
-            this.buttonSignSystem = new System.Windows.Forms.Button();
+            this.textBoxSendText = new System.Windows.Forms.TextBox();
+            this.buttonSendText = new System.Windows.Forms.Button();
             this.apkListBoxMenu.SuspendLayout();
             this.deviceListBoxMenu.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -73,6 +78,7 @@
             this.textBox2.Font = new System.Drawing.Font("Consolas", 10F);
             this.textBox2.Location = new System.Drawing.Point(12, 30);
             this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(619, 23);
             this.textBox2.TabIndex = 1;
             // 
@@ -91,32 +97,39 @@
             // textBox3
             // 
             this.textBox3.Font = new System.Drawing.Font("Consolas", 10F);
-            this.textBox3.Location = new System.Drawing.Point(108, 434);
+            this.textBox3.Location = new System.Drawing.Point(108, 441);
             this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
             this.textBox3.Size = new System.Drawing.Size(430, 23);
             this.textBox3.TabIndex = 5;
+            this.textBox3.Click += new System.EventHandler(this.textBox3_Click);
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox4
             // 
             this.textBox4.Font = new System.Drawing.Font("Consolas", 10F);
-            this.textBox4.Location = new System.Drawing.Point(108, 463);
+            this.textBox4.Location = new System.Drawing.Point(108, 470);
             this.textBox4.Name = "textBox4";
+            this.textBox4.ReadOnly = true;
             this.textBox4.Size = new System.Drawing.Size(430, 23);
             this.textBox4.TabIndex = 6;
+            this.textBox4.Click += new System.EventHandler(this.textBox4_Click);
             // 
             // textBox5
             // 
             this.textBox5.Font = new System.Drawing.Font("Consolas", 10F);
-            this.textBox5.Location = new System.Drawing.Point(108, 492);
+            this.textBox5.Location = new System.Drawing.Point(108, 499);
             this.textBox5.Name = "textBox5";
+            this.textBox5.ReadOnly = true;
             this.textBox5.Size = new System.Drawing.Size(430, 23);
             this.textBox5.TabIndex = 7;
+            this.textBox5.Click += new System.EventHandler(this.textBox5_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Consolas", 10F);
-            this.label1.Location = new System.Drawing.Point(6, 437);
+            this.label1.Location = new System.Drawing.Point(6, 444);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(96, 17);
             this.label1.TabIndex = 8;
@@ -126,7 +139,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Consolas", 10F);
-            this.label2.Location = new System.Drawing.Point(6, 466);
+            this.label2.Location = new System.Drawing.Point(6, 473);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(96, 17);
             this.label2.TabIndex = 9;
@@ -136,7 +149,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Consolas", 10F);
-            this.label3.Location = new System.Drawing.Point(6, 495);
+            this.label3.Location = new System.Drawing.Point(6, 502);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 17);
             this.label3.TabIndex = 10;
@@ -170,17 +183,17 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(11, 615);
+            this.progressBar1.Location = new System.Drawing.Point(12, 698);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(711, 18);
+            this.progressBar1.Size = new System.Drawing.Size(710, 18);
             this.progressBar1.TabIndex = 15;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Consolas", 10F);
-            this.label4.Location = new System.Drawing.Point(6, 524);
+            this.label4.Location = new System.Drawing.Point(6, 531);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(72, 17);
             this.label4.TabIndex = 16;
@@ -189,25 +202,34 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Consolas", 10F);
-            this.textBox1.Location = new System.Drawing.Point(108, 521);
+            this.textBox1.Location = new System.Drawing.Point(108, 528);
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(430, 23);
             this.textBox1.TabIndex = 17;
+            this.textBox1.Click += new System.EventHandler(this.textBox1_Click);
             // 
             // apkListBoxMenu
             // 
             this.apkListBoxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.apkListBoxMenuItem3,
             this.apkListBoxMenuItem1,
             this.apkListBoxMenuItem2,
-            this.apkListBoxMenuItem3,
+            this.menuItemClearData,
             this.toolStripSeparator1,
             this.apkListBoxMenuItem5,
             this.toolStripSeparator2,
             this.apkListBoxMenuItem4});
             this.apkListBoxMenu.Name = "apkListBoxMenu";
             this.apkListBoxMenu.ShowImageMargin = false;
-            this.apkListBoxMenu.Size = new System.Drawing.Size(122, 126);
+            this.apkListBoxMenu.Size = new System.Drawing.Size(122, 148);
             this.apkListBoxMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.apkListBoxMenu_ItemClicked);
+            // 
+            // apkListBoxMenuItem3
+            // 
+            this.apkListBoxMenuItem3.Name = "apkListBoxMenuItem3";
+            this.apkListBoxMenuItem3.Size = new System.Drawing.Size(121, 22);
+            this.apkListBoxMenuItem3.Text = "Start APP";
             // 
             // apkListBoxMenuItem1
             // 
@@ -221,11 +243,11 @@
             this.apkListBoxMenuItem2.Size = new System.Drawing.Size(121, 22);
             this.apkListBoxMenuItem2.Text = "Uinstall APK";
             // 
-            // apkListBoxMenuItem3
+            // menuItemClearData
             // 
-            this.apkListBoxMenuItem3.Name = "apkListBoxMenuItem3";
-            this.apkListBoxMenuItem3.Size = new System.Drawing.Size(121, 22);
-            this.apkListBoxMenuItem3.Text = "Start APP";
+            this.menuItemClearData.Name = "menuItemClearData";
+            this.menuItemClearData.Size = new System.Drawing.Size(121, 22);
+            this.menuItemClearData.Text = "Clear Data";
             // 
             // toolStripSeparator1
             // 
@@ -321,16 +343,27 @@
             // 
             // groupBoxDevice
             // 
+            this.groupBoxDevice.Controls.Add(this.textBoxAdbShell);
             this.groupBoxDevice.Controls.Add(this.buttonRefreshDevice);
             this.groupBoxDevice.Controls.Add(this.listBox2);
             this.groupBoxDevice.Font = new System.Drawing.Font("Consolas", 10F);
             this.groupBoxDevice.Location = new System.Drawing.Point(12, 60);
             this.groupBoxDevice.Name = "groupBoxDevice";
-            this.groupBoxDevice.Size = new System.Drawing.Size(160, 550);
+            this.groupBoxDevice.Size = new System.Drawing.Size(160, 600);
             this.groupBoxDevice.TabIndex = 20;
             this.groupBoxDevice.TabStop = false;
             this.groupBoxDevice.Text = "Device List";
             this.groupBoxDevice.Enter += new System.EventHandler(this.groupBoxDevice_Enter);
+            // 
+            // textBoxAdbShell
+            // 
+            this.textBoxAdbShell.Location = new System.Drawing.Point(6, 379);
+            this.textBoxAdbShell.Name = "textBoxAdbShell";
+            this.textBoxAdbShell.ReadOnly = true;
+            this.textBoxAdbShell.Size = new System.Drawing.Size(148, 23);
+            this.textBoxAdbShell.TabIndex = 15;
+            this.textBoxAdbShell.Click += new System.EventHandler(this.textBoxAdbShell_Click);
+            this.textBoxAdbShell.TextChanged += new System.EventHandler(this.textBoxAdbShell_TextChanged);
             // 
             // buttonRefreshDevice
             // 
@@ -345,6 +378,7 @@
             // 
             // groupBoxAPK
             // 
+            this.groupBoxAPK.Controls.Add(this.textBoxPlatformKey);
             this.groupBoxAPK.Controls.Add(this.buttonSignSystem);
             this.groupBoxAPK.Controls.Add(this.comboBoxSignSystem);
             this.groupBoxAPK.Controls.Add(this.textBoxPackageFilte);
@@ -361,10 +395,42 @@
             this.groupBoxAPK.Font = new System.Drawing.Font("Consolas", 10F);
             this.groupBoxAPK.Location = new System.Drawing.Point(178, 60);
             this.groupBoxAPK.Name = "groupBoxAPK";
-            this.groupBoxAPK.Size = new System.Drawing.Size(544, 550);
+            this.groupBoxAPK.Size = new System.Drawing.Size(544, 600);
             this.groupBoxAPK.TabIndex = 21;
             this.groupBoxAPK.TabStop = false;
             this.groupBoxAPK.Text = "APK List";
+            // 
+            // textBoxPlatformKey
+            // 
+            this.textBoxPlatformKey.Location = new System.Drawing.Point(6, 412);
+            this.textBoxPlatformKey.Name = "textBoxPlatformKey";
+            this.textBoxPlatformKey.ReadOnly = true;
+            this.textBoxPlatformKey.Size = new System.Drawing.Size(532, 23);
+            this.textBoxPlatformKey.TabIndex = 22;
+            this.textBoxPlatformKey.Click += new System.EventHandler(this.textBoxPlatformKey_Click);
+            this.textBoxPlatformKey.TextChanged += new System.EventHandler(this.textBoxPlatformKey_TextChanged);
+            // 
+            // buttonSignSystem
+            // 
+            this.buttonSignSystem.AutoSize = true;
+            this.buttonSignSystem.Location = new System.Drawing.Point(463, 380);
+            this.buttonSignSystem.Name = "buttonSignSystem";
+            this.buttonSignSystem.Size = new System.Drawing.Size(75, 27);
+            this.buttonSignSystem.TabIndex = 21;
+            this.buttonSignSystem.Text = "System";
+            this.buttonSignSystem.UseVisualStyleBackColor = true;
+            this.buttonSignSystem.Click += new System.EventHandler(this.buttonSignSystem_Click);
+            // 
+            // comboBoxSignSystem
+            // 
+            this.comboBoxSignSystem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxSignSystem.FormattingEnabled = true;
+            this.comboBoxSignSystem.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.comboBoxSignSystem.Location = new System.Drawing.Point(6, 383);
+            this.comboBoxSignSystem.Name = "comboBoxSignSystem";
+            this.comboBoxSignSystem.Size = new System.Drawing.Size(447, 23);
+            this.comboBoxSignSystem.TabIndex = 20;
+            this.comboBoxSignSystem.SelectedIndexChanged += new System.EventHandler(this.comboBoxSignSystem_SelectedIndexChanged);
             // 
             // textBoxPackageFilte
             // 
@@ -385,26 +451,27 @@
             this.buttonPackageFilte.UseVisualStyleBackColor = true;
             this.buttonPackageFilte.Click += new System.EventHandler(this.buttonPackageFilte_Click);
             // 
-            // comboBoxSignSystem
+            // textBoxSendText
             // 
-            this.comboBoxSignSystem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxSignSystem.FormattingEnabled = true;
-            this.comboBoxSignSystem.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.comboBoxSignSystem.Location = new System.Drawing.Point(6, 383);
-            this.comboBoxSignSystem.Name = "comboBoxSignSystem";
-            this.comboBoxSignSystem.Size = new System.Drawing.Size(447, 23);
-            this.comboBoxSignSystem.TabIndex = 20;
+            this.textBoxSendText.Font = new System.Drawing.Font("Consolas", 10F);
+            this.textBoxSendText.Location = new System.Drawing.Point(12, 669);
+            this.textBoxSendText.Name = "textBoxSendText";
+            this.textBoxSendText.Size = new System.Drawing.Size(629, 23);
+            this.textBoxSendText.TabIndex = 22;
+            this.textBoxSendText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxSendText_KeyPress);
+            this.textBoxSendText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBoxSendText_KeyUp);
             // 
-            // buttonSignSystem
+            // buttonSendText
             // 
-            this.buttonSignSystem.AutoSize = true;
-            this.buttonSignSystem.Location = new System.Drawing.Point(463, 380);
-            this.buttonSignSystem.Name = "buttonSignSystem";
-            this.buttonSignSystem.Size = new System.Drawing.Size(75, 27);
-            this.buttonSignSystem.TabIndex = 21;
-            this.buttonSignSystem.Text = "System";
-            this.buttonSignSystem.UseVisualStyleBackColor = true;
-            this.buttonSignSystem.Click += new System.EventHandler(this.buttonSignSystem_Click);
+            this.buttonSendText.AutoSize = true;
+            this.buttonSendText.Font = new System.Drawing.Font("Consolas", 10F);
+            this.buttonSendText.Location = new System.Drawing.Point(647, 666);
+            this.buttonSendText.Name = "buttonSendText";
+            this.buttonSendText.Size = new System.Drawing.Size(75, 27);
+            this.buttonSendText.TabIndex = 23;
+            this.buttonSendText.Text = "Send";
+            this.buttonSendText.UseVisualStyleBackColor = true;
+            this.buttonSendText.Click += new System.EventHandler(this.buttonSendText_Click);
             // 
             // MainForm
             // 
@@ -412,6 +479,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(734, 761);
+            this.Controls.Add(this.buttonSendText);
+            this.Controls.Add(this.textBoxSendText);
             this.Controls.Add(this.groupBoxAPK);
             this.Controls.Add(this.groupBoxDevice);
             this.Controls.Add(this.statusStrip);
@@ -420,11 +489,13 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textBox2);
             this.MainMenuStrip = this.menuStrip;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "APKInfoViewer";
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.apkListBoxMenu.ResumeLayout(false);
             this.deviceListBoxMenu.ResumeLayout(false);
@@ -477,6 +548,11 @@
         private System.Windows.Forms.Button buttonRefreshDevice;
         private System.Windows.Forms.Button buttonSignSystem;
         private System.Windows.Forms.ComboBox comboBoxSignSystem;
+        private System.Windows.Forms.TextBox textBoxPlatformKey;
+        private System.Windows.Forms.ToolStripMenuItem menuItemClearData;
+        private System.Windows.Forms.TextBox textBoxAdbShell;
+        private System.Windows.Forms.TextBox textBoxSendText;
+        private System.Windows.Forms.Button buttonSendText;
     }
 }
 

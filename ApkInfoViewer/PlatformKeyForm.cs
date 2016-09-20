@@ -18,15 +18,10 @@ namespace ApkInfoViewer {
         }
 
         private void PlatformKeyForm_Load(object sender, EventArgs e) {
-            _ConfgiManager = new ConfigManager();
             listBoxKeyList.DisplayMember = "description";
             listBoxKeyList.ValueMember = "description";
 
-            if (_ConfgiManager.keyList != null) {
-                foreach (PlatformKey platformKey in _ConfgiManager.keyList) {
-                    listBoxKeyList.Items.Add(platformKey);
-                }
-            }
+            updateListBox();
         }
 
         private void buttonSelectFile_Click(object sender, EventArgs e) {
@@ -65,6 +60,27 @@ namespace ApkInfoViewer {
                 textBoxDesc.Text = String.Empty;
                 textBoxFilePath.Text = String.Empty;
                 textBoxSelectPK8.Text = String.Empty;
+            }
+
+            updateListBox();
+        }
+
+        private void listBoxKeyList_SelectedIndexChanged(object sender, EventArgs e) {
+            PlatformKey selectedItem = listBoxKeyList.SelectedItem as PlatformKey;
+
+            textBoxFilePath.Text = selectedItem.path_pem;
+            textBoxSelectPK8.Text = selectedItem.path_pk8;
+            textBoxDesc.Text = selectedItem.description;
+        }
+
+        private void updateListBox() {
+            _ConfgiManager = new ConfigManager();
+
+            if (_ConfgiManager.keyList != null) {
+                listBoxKeyList.Items.Clear();
+                foreach (PlatformKey platformKey in _ConfgiManager.keyList) {
+                    listBoxKeyList.Items.Add(platformKey);
+                }
             }
         }
     }

@@ -12,10 +12,12 @@ namespace ApkInfoViewer {
         private const String FIELD_AAPT = "AAPT";
         private const String FIELD_SIGNAPK = "SIGNAPK";
         private const String FIELD_PLATFORM_KEY = "PLATFORM_KEY";
+        private const String FIELD_LAST_SELECTED_FOLDER = "LAST_SELECTED_FOLDER";
 
         public String path_ADB { get; set; }
         public String path_AAPT { get; set; }
         public String path_SIGNAPK { get; set; }
+        public String path_last_selected_folder { get; set; }
         public List<PlatformKey> keyList { get; set; }
 
         public ConfigManager() {
@@ -32,15 +34,21 @@ namespace ApkInfoViewer {
                     while (!reader.EndOfStream) {
                         String readLine = reader.ReadLine();
                         Console.WriteLine("readLine : " + readLine);
+
                         if (readLine.Contains("=")) {
-                            if (readLine.Split('=')[0] == FIELD_ADB) {
-                                path_ADB = readLine.Split('=')[1];
-                            } else if (readLine.Split('=')[0] == FIELD_AAPT) {
-                                path_AAPT = readLine.Split('=')[1];
-                            } else if (readLine.Split('=')[0] == FIELD_SIGNAPK) {
-                                path_SIGNAPK = readLine.Split('=')[1];
-                            } else if (readLine.Split('=')[0] == FIELD_PLATFORM_KEY) {
-                                String infos = readLine.Split('=')[1];
+                            String keyString = readLine.Split('=')[0];
+                            String valueString = readLine.Split('=')[1];
+                            Console.WriteLine("keyString : " + keyString);
+                            Console.WriteLine("valueString : " + valueString);
+
+                            if (keyString.Equals(FIELD_ADB)) {
+                                path_ADB = valueString;
+                            } else if (keyString.Equals(FIELD_AAPT)) {
+                                path_AAPT = valueString;
+                            } else if (keyString.Equals(FIELD_SIGNAPK)) {
+                                path_SIGNAPK = valueString;
+                            } else if (keyString.Equals(FIELD_PLATFORM_KEY)) {
+                                String infos = valueString;
 
                                 if (keyList == null) {
                                     keyList = new List<PlatformKey>();
@@ -51,6 +59,8 @@ namespace ApkInfoViewer {
                                 platformKey.path_pem = infos.Split('&')[1];
                                 platformKey.path_pk8 = infos.Split('&')[2];
                                 keyList.Add(platformKey);
+                            } else if (keyString.Equals(FIELD_LAST_SELECTED_FOLDER)) {
+                                path_last_selected_folder = valueString;
                             }
                         }
                     }
@@ -80,7 +90,23 @@ namespace ApkInfoViewer {
                 keyList = new List<PlatformKey>();
             }
 
-            keyList.Add(platformKey);
+            bool exists = false;
+            foreach (PlatformKey item in keyList) {
+                if (item.description.Equals(platformKey.description)) {
+                    item.path_pem = platformKey.path_pem;
+                    item.path_pk8 = platformKey.path_pk8;
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                keyList.Add(platformKey);
+            }
+            writeFile();
+        }
+
+        public void setLastSelectedPath(String path) {
+            path_last_selected_folder = path;
             writeFile();
         }
 
@@ -90,6 +116,7 @@ namespace ApkInfoViewer {
                 writer.WriteLine(FIELD_ADB + "=" + path_ADB);
                 writer.WriteLine(FIELD_AAPT + "=" + path_AAPT);
                 writer.WriteLine(FIELD_SIGNAPK + "=" + path_SIGNAPK);
+                writer.WriteLine(FIELD_LAST_SELECTED_FOLDER + "=" + path_last_selected_folder);
 
                 if (keyList != null && keyList.Count > 0) {
                     foreach (PlatformKey platformKey in keyList) {
